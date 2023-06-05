@@ -5,7 +5,7 @@ pkgbase=openblas
 pkgname=(openblas openblas64 blas-openblas blas64-openblas)
 _pkgname=OpenBLAS
 pkgver=0.3.23
-pkgrel=2
+pkgrel=3
 _blasver=3.11.0
 pkgdesc="An optimized BLAS library based on GotoBLAS2 1.13 BSD"
 arch=('x86_64')
@@ -17,7 +17,10 @@ source=(${_pkgname}-v${pkgver}.tar.gz::https://github.com/xianyi/OpenBLAS/archiv
 sha512sums=('ea64c693e57eb63cc2a88e4d6ab2d8cf9ab84ae6a15048fb12090a3570dd41053e62e99c1ff9d3e02dd67ca93233591ab41b8c017d06585d0a69222e1ad3023f')
 
 build() {
-  cmake -B build -S $_pkgname-$pkgver \
+  # Setting FC manually to avoid picking up f95 and breaking the cmake build
+  # https://github.com/xianyi/OpenBLAS/issues/4072#issuecomment-1576388332
+
+  FC=gfortran cmake -B build -S $_pkgname-$pkgver \
     -DCMAKE_INSTALL_PREFIX=/usr \
     -DBUILD_SHARED_LIBS=ON \
     -DBUILD_TESTING=OFF \
@@ -29,7 +32,7 @@ build() {
     -DDYNAMIC_ARCH=ON
   cmake --build build
 
-  cmake -B build64 -S $_pkgname-$pkgver \
+  FC=gfortran cmake -B build64 -S $_pkgname-$pkgver \
     -DCMAKE_INSTALL_PREFIX=/usr \
     -DBUILD_SHARED_LIBS=ON \
     -DBUILD_TESTING=OFF \
@@ -48,8 +51,7 @@ check() {
   ctest
 
   cd "$srcdir"/build64
-  # TODO: many segfaults
-  # ctest
+  ctest
 }
 
 package_openblas() {
