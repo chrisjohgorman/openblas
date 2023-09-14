@@ -5,7 +5,7 @@ pkgbase=openblas
 pkgname=(openblas openblas64 blas-openblas blas64-openblas)
 _pkgname=OpenBLAS
 pkgver=0.3.24
-pkgrel=1
+pkgrel=2
 _blasver=3.11.0
 pkgdesc="An optimized BLAS library based on GotoBLAS2 1.13 BSD"
 arch=('x86_64')
@@ -71,8 +71,9 @@ package_openblas64() {
 package_blas-openblas() {
   pkgdesc+=" (Provides BLAS/CBLAS/LAPACK/LAPACKE system-wide)"
   depends=('openblas')
-  provides=("blas=$_blasver" "cblas=$_blasver" "lapack=$_blasver" "lapacke=$_blasver")
-  conflicts=('blas' 'cblas' 'lapack' 'lapacke')
+  provides=("blas=$_blasver" "cblas=$_blasver" "lapack=$_blasver" "lapacke=$_blasver" "openblas-lapack=$pkgver")
+  conflicts=('blas' 'cblas' 'lapack' 'lapacke' 'openblas-lapack')
+  replaces=('openblas-lapack')
 
   mkdir -p "$pkgdir"/usr/lib/pkgconfig
   cd "$pkgdir"/usr/lib/
