@@ -20,7 +20,10 @@ build() {
   # Setting FC manually to avoid picking up f95 and breaking the cmake build
   # https://github.com/xianyi/OpenBLAS/issues/4072#issuecomment-1576388332
 
-  FC=gfortran cmake -B build -S $_pkgname-$pkgver \
+  # Setting ASM flags for CET support.  Setting FFLAGS for CET support.
+  # Remove ` -Wformat -Werror=format-security` not supported by gcc-fortran.
+
+  ASMFLAGS=$CFLAGS FFLAGS=${CFLAGS/ -Wformat -Werror=format-security/} FC=gfortran cmake -B build -S $_pkgname-$pkgver \
     -DCMAKE_INSTALL_PREFIX=/usr \
     -DBUILD_SHARED_LIBS=ON \
     -DBUILD_TESTING=OFF \
@@ -32,7 +35,7 @@ build() {
     -DDYNAMIC_ARCH=ON
   cmake --build build
 
-  FC=gfortran cmake -B build64 -S $_pkgname-$pkgver \
+  ASMFLAGS=$CFLAGS FFLAGS=${CFLAGS/ -Wformat -Werror=format-security/} FC=gfortran cmake -B build64 -S $_pkgname-$pkgver \
     -DCMAKE_INSTALL_PREFIX=/usr \
     -DBUILD_SHARED_LIBS=ON \
     -DBUILD_TESTING=OFF \
